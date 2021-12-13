@@ -1,0 +1,12 @@
+.register-container {
+    padding-top: 2%;
+    margin-left: 20%;
+    margin-right: 20%;
+}
+
+@media only screen and (min-width: 992px) {
+    .register-container {
+        margin-left: 30%;
+        margin-right: 30%;
+    }
+}

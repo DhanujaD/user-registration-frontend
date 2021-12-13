@@ -1,0 +1,12 @@
+.login-component {
+    padding-top: 2%;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+@media only screen and (min-width: 992px) {
+    .login-component {
+        padding-left: 30%;
+        padding-right: 30%;
+    }
+}
