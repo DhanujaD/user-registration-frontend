@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 
-import "antd/dist/antd.css";
-
-function Home() {
-    return <div>Home</div>;
+class Home extends React.Component {
+    render() {
+        return <div>Home</div>;
+    }
 }
 
 export default Home;

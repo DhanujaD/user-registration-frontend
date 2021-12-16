@@ -1,16 +1,50 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Table, Tag, Space } from "antd";
+import React from "react";
+import WrapperComponent from "../common/WrapperComponent";
+import { Table, Tag, Space, Button } from "antd";
 import handleError from '../common/handleError'
 import displayNotification from '../common/displayNotification'
 import sendApiRequest from '../common/sendApiRequest'
 
+class ViewAllUsers extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            userData: []
+        }
+    }
 
-function ViewAllUsers() {
-    const navigate = useNavigate();
-    const [userData, setUserData] = useState([]);
+    componentDidMount() {
+        this.getAllUsers()
+    }
 
-    const columns = [
+    getAllUsers() {
+        sendApiRequest('get', "user")
+            .then((response) => {
+                const userData = response.data.map((user) => ({
+                    key: user.id,
+                    ...user
+                }))
+                this.setState({
+                    userData
+                })
+            })
+            .catch((error) => {
+                handleError(error.response);
+            });
+    };
+
+    deleteUser(id) {
+        sendApiRequest('delete', "user/" + id)
+            .then((response) => {
+                displayNotification('success', 'User deleted successfully.')
+                this.getAllUsers();
+            })
+            .catch((error) => {
+                handleError(error.response);
+            });
+    };
+
+    columns = [
         {
             title: "ID",
             dataIndex: "id",
@@ -54,57 +88,26 @@ function ViewAllUsers() {
             dataIndex: "id",
             render: (text, record) => (
                 <Space size="middle">
-                    <a
-                        onClick={() => {
-                            navigate(`/dashboard/update-profile/${text}`);
-                        }}
-                    >
+                    <Button type="link" onClick={() => {this.props.navigate(`/dashboard/update-profile/${text}`);}}>
                         Edit
-                    </a>
-                    <a
-                        style={{ color: "red" }}
-                        onClick={() => {
-                            deleteUser(text);
-                        }}
-                    >
+                    </Button>
+                    <Button type="link" danger onClick={() => {this.deleteUser(text);}}>
                         Delete
-                    </a>
+                    </Button>
                 </Space>
             ),
         },
     ];
 
-    useEffect(() => {
-        getAllUsers();
-    }, []);
-
-    const getAllUsers = () => {
-        sendApiRequest('get', "user")
-            .then((response) => {
-                setUserData(response.data);
-            })
-            .catch((error) => {
-                handleError(error.response);
-            });
-    };
-
-    const deleteUser = (id) => {
-        sendApiRequest('delete', "user/" + id)
-            .then((response) => {
-                displayNotification('success', 'User deleted successfully.')
-                getAllUsers();
-            })
-            .catch((error) => {
-                handleError(error.response);
-            });
-    };
-
-    return (
-        <div>
-            <h2>All Users</h2>
-            <Table columns={columns} dataSource={userData} />
-        </div>
-    );
+    render() {
+        return (
+            <div>
+                <h2>All Users</h2>
+                <Table columns={this.columns} dataSource={this.state.userData} />
+            </div>
+        );
+    }
 }
 
-export default ViewAllUsers;
+const wrappedComponent = () => <WrapperComponent component={ViewAllUsers} />;
+export default wrappedComponent;
